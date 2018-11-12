@@ -2,8 +2,7 @@ from collections import defaultdict
 import mazes
 import random
 import heapq
-
-
+import time
 
 
 class CSP:
@@ -16,6 +15,8 @@ class CSP:
         self.island = []
         self.completeColors = []
         self.findStartandFinish(maze)
+        self.variableAssignments = 0
+        self.t_start = time.time()
         mazes.printMaze(maze)
 
 
@@ -35,10 +36,12 @@ class CSP:
 
     def dumbBacktracking(self, assignment):
         if self.complete(assignment): #if the assignment is complete, return and print maze
+            print("Var. Assignments:", self.variableAssignments, ", Time: ", time.time() - self.t_start)
             mazes.printMaze(assignment)
             return assignment
 
         node = self.getNode(assignment) #get a node that has not been visited
+        self.variableAssignments += 1
 
         if node is None: #when all nodes have been visited but the assignment is not complete, instant fail
             return False
@@ -64,8 +67,38 @@ class CSP:
                 node.value = '_'
         return False
 
-    def backtracking(self, assignment):
-        pass
+    def smartBacktracking(self, assignment):
+        if self.complete(assignment): #if the assignment is complete, return and print maze
+            print("Var. Assignments:", self.variableAssignments, ", Time: ", time.time() - self.t_start)
+            mazes.printMaze(assignment)
+            return assignment
+
+        node = self.getNode_i(assignment) #get a node that has not been visited
+        self.variableAssignments += 1
+
+        if node is None: #when all nodes have been visited but the assignment is not complete, instant fail
+            return False
+        
+        if len(self.island) > 0:
+            for icolor in self.island:
+                if self.hasIsland(icolor, self.colorVisited[icolor]):
+                    return False
+                else:
+                    self.island.remove(icolor)
+
+        for color in self.getColors(node):
+            if self.consistant(color, node, assignment): #if the color we have chosen is legal, use it
+                self.visited.append(node)
+                self.colorVisited[color].append(node)
+                result = self.smartBacktracking(assignment) #move on to next node
+                if result:
+                    return result
+                self.visited.remove(node) #that branch failed, backtrack
+                self.colorVisited[color].remove(node)
+                if color in self.completeColors:
+                    self.completeColors.remove(color)
+                node.value = '_'
+        return False
 
     def getColors(self, node):
         colors = [] #prioitizes adjacent colors
@@ -82,6 +115,25 @@ class CSP:
             for node in row:
                 if node not in self.visited: #if node is not visited, return
                     return node
+
+    def getNode_i(self, assignment):
+        bestNode = None
+        paths = 0
+        for row in assignment:
+            for node in row:
+                if node not in self.visited: #if node is not visited, check if it is better than bestNode
+                    nodePaths = 0;
+                    for neighbor in node.neighbors:
+                        if neighbor not in self.visited and neighbor.value is not '_':
+                            nodePaths += 1
+
+                    if bestNode is None or nodePaths is not 0 and nodePaths < paths:
+                        bestNode = node
+                        paths = nodePaths
+
+                    if paths == 1:
+                        return bestNode
+        return bestNode
 
     def complete(self, assignment): #checks to see if assignment is correct
         for color in self.domain:
@@ -191,34 +243,69 @@ class CSP:
 
 if __name__=='__main__':
     #create mazes
-    mazeTest = mazes.readMaze("5x5maze_solution.txt")
-    maze5x5 = mazes.readMaze("5x5maze.txt")
-    maze7x7 = mazes.readMaze("7x7maze.txt")
-    maze8x8 = mazes.readMaze("8x8maze.txt")
-    maze9x9 = mazes.readMaze("9x9maze.txt")
-    maze10x10 = mazes.readMaze("10x10maze.txt")
-    maze12x12 = mazes.readMaze("12x12maze.txt")
-    maze14x14 = mazes.readMaze("14x14maze.txt")
+    mazeTest = mazes.readMaze("../mazes/5x5maze_solution.txt")
+    maze5x5 = mazes.readMaze("../mazes/5x5maze.txt")
+    maze7x7 = mazes.readMaze("../mazes/7x7maze.txt")
+    maze8x8 = mazes.readMaze("../mazes/8x8maze.txt")
+    maze9x9 = mazes.readMaze("../mazes/9x9maze.txt")
+    maze10x10 = mazes.readMaze("../mazes/10x10maze.txt")
+    maze12x12 = mazes.readMaze("../mazes/12x12maze.txt")
+    maze14x14 = mazes.readMaze("../mazes/14x14maze.txt")
+
+
+    cspmazeTest = CSP(mazeTest)#Prints out the correct maze given by instructor
 
     print("Solving 5x5:")
     csp5x5 = CSP(maze5x5)
     csp5x5.dumbBacktracking(maze5x5)
 
-    cspmazeTest = CSP(mazeTest)#Prints out the correct maze given by instructor
+    print("solving 5x5 intelligently")
+    maze5x5 = mazes.readMaze("../mazes/5x5maze.txt")
+    csp5x5_i = CSP(maze5x5)
+    csp5x5_i.smartBacktracking(maze5x5)
 
     print("Solving 7x7:")
     csp7x7 = CSP(maze7x7)
     csp7x7.dumbBacktracking(maze7x7)
 
+    print("Solving 7x7 intelligently:")
+    maze7x7 = mazes.readMaze("../mazes/7x7maze.txt")
+    csp7x7_i = CSP(maze7x7)
+    csp7x7_i.smartBacktracking(maze7x7)
+
     print("Solving 8x8:")
     csp8x8 = CSP(maze8x8)
     csp8x8.dumbBacktracking(maze8x8)
+
+    print("Solving 8x8 intelligently:")
+    maze8x8 = mazes.readMaze("../mazes/8x8maze.txt")
+    csp8x8_i = CSP(maze8x8)
+    csp8x8_i.smartBacktracking(maze8x8)
 
     print("Solving 9x9:")
     csp9x9 = CSP(maze9x9)
     csp9x9.dumbBacktracking(maze9x9)
 
+    print("Solving 9x9 intelligently:")
+    maze9x9 = mazes.readMaze("../mazes/9x9maze.txt")
+    csp9x9_i = CSP(maze9x9)
+    csp9x9_i.smartBacktracking(maze9x9)
+
     print("Solving 10x10:")
     csp10x10 = CSP(maze10x10)
     csp10x10.dumbBacktracking(maze10x10)
-    
+
+    print("Solving 10x10 intelligently:")
+    maze10x10 = mazes.readMaze("../mazes/10x10maze.txt")
+    csp10x10_i = CSP(maze10x10)
+    csp10x10_i.smartBacktracking(maze10x10)
+
+    print("Solving 12x12:")
+    csp12x12 = CSP(maze12x12)
+    csp12x12.dumbBacktracking(maze12x12)
+
+    print("Solving 12x12 intelligently:")
+    maze12x12 = mazes.readMaze("../mazes/12x12maze.txt")
+    csp12x12_i = CSP(maze12x12)
+    csp12x12_i.smartBacktracking(maze12x12)
+
