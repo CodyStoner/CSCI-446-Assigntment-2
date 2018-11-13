@@ -127,10 +127,10 @@ class CSP:
                     nodePaths = 0;
                     pathNear = False
                     for neighbor in node.neighbors:
-                        if neighbor not in self.visited and neighbor.value == '_':
+                        if neighbor not in self.visited and neighbor.value is '_':
                             nodePaths += 1
 
-                        if neighbor.value != '_':
+                        if neighbor.value is not '_':
                             pathnear = True
 
                     if bestNode is None or (nodePaths is not 0 and nodePaths < paths and pathNear):
