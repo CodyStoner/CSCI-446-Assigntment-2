@@ -5,6 +5,8 @@ import heapq
 import time
 import argparse
 import sys
+import copy
+from pathlib import Path
 
 class CSP:
     def __init__(self, maze):
@@ -18,7 +20,6 @@ class CSP:
         self.findStartandFinish(maze)
         self.variableAssignments = 0
         self.t_start = time.time()
-        mazes.printMaze(maze)
 
 
     def findStartandFinish(self, maze): #find start and finish to each color
@@ -246,96 +247,44 @@ class CSP:
                 return True
         return False
 
+def solveMaze(filePath, dumb, smart):
+    maze = mazes.readMaze(filePath)
+    maze_i = mazes.readMaze(filePath)
+    mazeCSP = CSP(maze)
+    mazeCSP_i = CSP(maze_i)
+    if dumb or not smart:
+        print("################## Dumb ##################")
+        print("Solving", filePath)
+        mazes.printMaze(maze)
+        mazeCSP.dumbBacktracking(maze)
+    if smart or not dumb:
+        print("############### Intelligent ###############")
+        print("Solving", filePath)
+        mazes.printMaze(maze_i)
+        mazeCSP_i.smartBacktracking(maze_i)
+
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-x5', action="store_true", default=False)
-    parser.add_argument('-x7', action="store_true", default=False)
-    parser.add_argument('-x8', action="store_true", default=False)
-    parser.add_argument('-x9', action="store_true", default=False)
-    parser.add_argument('-x10', action="store_true", default=False)
-    parser.add_argument('-x12', action="store_true", default=False)
-    #parser.add_argument('--x14', action="store_true", default=False)
-    parser.add_argument('-a', action="store_true", default=False)
+    parser.add_argument('-f', action="store", dest="filePath", type=str, help='Solve and display a single maze')
+    parser.add_argument('-d', action="store", dest="dirPath", type=str, help='Solve and display all mazes ending in .txt in given directory')
+    parser.add_argument('--smart', '-S', action="store_true", default=False, help='solve mazes using only intelligent method')
+    parser.add_argument('--dumb', '-D', action="store_true", default=False, help='solve mazes using only dumb method')
+
     if len(sys.argv[1:])==0:
         parser.print_help()
         # parser.print_usage() # for just the usage line
         parser.exit()
+
     args = parser.parse_args()
+    filePath = args.filePath
+    dirPath = args.dirPath
+    dumb = args.dumb
+    smart = args.smart
 
-    #create mazes
-    mazeTest = mazes.readMaze("mazes/5x5maze_solution.txt")
-    maze5x5 = mazes.readMaze("mazes/5x5maze.txt")
-    maze7x7 = mazes.readMaze("mazes/7x7maze.txt")
-    maze8x8 = mazes.readMaze("mazes/8x8maze.txt")
-    maze9x9 = mazes.readMaze("mazes/9x9maze.txt")
-    maze10x10 = mazes.readMaze("mazes/10x10maze.txt")
-    maze12x12 = mazes.readMaze("mazes/12x12maze.txt")
-    maze14x14 = mazes.readMaze("mazes/14x14maze.txt")
+    if filePath:
+        solveMaze(filePath, dumb, smart)
 
-    #cspmazeTest = CSP(mazeTest)#Prints out the correct maze given by instructor
-
-    if(args.x5 or args.a):
-        print("Solving 5x5:")
-        csp5x5 = CSP(maze5x5)
-        csp5x5.dumbBacktracking(maze5x5)
-
-    if(args.x5 or args.a):
-        print("solving 5x5 intelligently")
-        maze5x5 = mazes.readMaze("mazes/5x5maze.txt")
-        csp5x5_i = CSP(maze5x5)
-        csp5x5_i.smartBacktracking(maze5x5)
-
-    if(args.x7 or args.a):
-        print("Solving 7x7:")
-        csp7x7 = CSP(maze7x7)
-        csp7x7.dumbBacktracking(maze7x7)
-
-    if(args.x7 or args.a):
-        print("Solving 7x7 intelligently:")
-        maze7x7 = mazes.readMaze("mazes/7x7maze.txt")
-        csp7x7_i = CSP(maze7x7)
-        csp7x7_i.smartBacktracking(maze7x7)
-
-    if(args.x8 or args.a):
-        print("Solving 8x8:")
-        csp8x8 = CSP(maze8x8)
-        csp8x8.dumbBacktracking(maze8x8)
-
-    if(args.x8 or args.a):
-        print("Solving 8x8 intelligently:")
-        maze8x8 = mazes.readMaze("mazes/8x8maze.txt")
-        csp8x8_i = CSP(maze8x8)
-        csp8x8_i.smartBacktracking(maze8x8)
-
-    if(args.x9 or args.a):
-        print("Solving 9x9:")
-        csp9x9 = CSP(maze9x9)
-        csp9x9.dumbBacktracking(maze9x9)
-
-    if(args.x9 or args.a):
-        print("Solving 9x9 intelligently:")
-        maze9x9 = mazes.readMaze("mazes/9x9maze.txt")
-        csp9x9_i = CSP(maze9x9)
-        csp9x9_i.smartBacktracking(maze9x9)
-
-    if(args.x10 or args.a):
-        print("Solving 10x10:")
-        csp10x10 = CSP(maze10x10)
-        csp10x10.dumbBacktracking(maze10x10)
-
-    if(args.x10 or args.a):
-        print("Solving 10x10 intelligently:")
-        maze10x10 = mazes.readMaze("mazes/10x10maze.txt")
-        csp10x10_i = CSP(maze10x10)
-        csp10x10_i.smartBacktracking(maze10x10)
-
-    if(args.x12 or args.a):
-        print("Solving 12x12:")
-        csp12x12 = CSP(maze12x12)
-        csp12x12.dumbBacktracking(maze12x12)
-
-    if(args.x12 or args.a):
-        print("Solving 12x12 intelligently:")
-        maze12x12 = mazes.readMaze("mazes/12x12maze.txt")
-        csp12x12_i = CSP(maze12x12)
-        csp12x12_i.smartBacktracking(maze12x12)
+    if dirPath:
+        mazePaths = Path(dirPath).glob('*.txt')
+        for path in mazePaths:
+            solveMaze(path, dumb, smart)
