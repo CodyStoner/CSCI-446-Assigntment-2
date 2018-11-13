@@ -1,8 +1,10 @@
+from pathlib import Path
 
 def readMaze(filename):
     #read in file
     maze = []
-    file = open(filename, "r")
+    file_path = Path(filename)
+    file = open(file_path, "r")
     columns = file.readlines()
     for i, column in enumerate(columns):
         column = column.strip()
