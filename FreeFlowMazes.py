@@ -133,7 +133,7 @@ class CSP:
                         if neighbor.value is not '_':
                             pathnear = True
 
-                    if bestNode is None or (nodePaths is not 0 and nodePaths < paths and pathNear):
+                    if bestNode is None or (nodePaths != 0 and nodePaths < paths and pathNear):
                         bestNode = node
                         paths = nodePaths
 
