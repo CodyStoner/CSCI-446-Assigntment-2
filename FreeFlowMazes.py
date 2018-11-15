@@ -42,6 +42,10 @@ class CSP:
             mazes.printMaze(assignment)
             return assignment
 
+        if debug:
+            time.sleep(0.2)
+            mazes.printMaze(assignment)
+
         node = self.getNode(assignment) #get a node that has not been visited
         self.variableAssignments += 1
 
@@ -74,7 +78,9 @@ class CSP:
             print("Var. Assignments:", self.variableAssignments, ", Time: ", time.time() - self.t_start)
             mazes.printMaze(assignment)
             return assignment
-
+        if debug:
+            time.sleep(0.2)
+            mazes.printMaze(assignment)
         node = self.getNode_i(assignment) #get a node that has not been visited
         self.variableAssignments += 1
 
@@ -269,6 +275,7 @@ if __name__=='__main__':
     parser.add_argument('-d', action="store", dest="dirPath", type=str, help='Solve and display all mazes ending in .txt in given directory')
     parser.add_argument('--smart', '-S', action="store_true", default=False, help='solve mazes using only intelligent method')
     parser.add_argument('--dumb', '-D', action="store_true", default=False, help='solve mazes using only dumb method')
+    parser.add_argument('--debug', action="store_true", default=False, help='Prints solution step by step')
 
     if len(sys.argv[1:])==0:
         parser.print_help()
@@ -280,6 +287,7 @@ if __name__=='__main__':
     dirPath = args.dirPath
     dumb = args.dumb
     smart = args.smart
+    debug = args.debug
 
     if filePath:
         solveMaze(filePath, dumb, smart)
