@@ -43,7 +43,7 @@ class CSP:
             return assignment
 
         if debug:
-            time.sleep(0.2)
+            time.sleep(0.1)
             mazes.printMaze(assignment)
 
         node = self.getNode(assignment) #get a node that has not been visited
@@ -79,7 +79,7 @@ class CSP:
             mazes.printMaze(assignment)
             return assignment
         if debug:
-            time.sleep(0.2)
+            time.sleep(0.1)
             mazes.printMaze(assignment)
         node = self.getNode_i(assignment) #get a node that has not been visited
         self.variableAssignments += 1
@@ -116,6 +116,13 @@ class CSP:
         for color in self.domain:
             if color not in colors and color not in self.completeColors:
                 colors.append(color)
+        return colors
+
+    def getColors_i(self, node):
+        colors = [] #prioitizes adjacent colors
+        for neighbor in node.neighbors:
+            if neighbor.value is not '_' and neighbor.value not in colors and neighbor.value not in self.completeColors:
+                colors.append(neighbor.value)
         return colors
 
     def getNode(self, assignment):
