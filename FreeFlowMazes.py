@@ -126,24 +126,24 @@ class CSP:
 
     def getNode_i(self, assignment):
         bestNode = None
-        paths = 0
+        bestScore = 0
         for row in assignment:
             for node in row:
                 if node not in self.visited: #if node is not visited, check if it is better than bestNode
-                    nodePaths = 0;
-                    pathNear = False
+                    pathsNear = 0
+                    openPaths = 0
                     for neighbor in node.neighbors:
-                        if neighbor not in self.visited and neighbor.value is '_':
-                            nodePaths += 1
-
                         if neighbor.value is not '_':
-                            pathnear = True
+                            pathsNear += 1
+                        else:
+                            openPaths += 1
 
-                    if bestNode is None or (nodePaths != 0 and nodePaths < paths and pathNear):
+                    nodeScore = pathsNear * openPaths
+                    if bestNode is None or nodeScore < bestScore and pathsNear > 0:
                         bestNode = node
-                        paths = nodePaths
+                        bestScore = nodeScore
 
-                    if paths == 1 and pathNear:
+                    if bestScore == 1:
                         return bestNode
         return bestNode
 
