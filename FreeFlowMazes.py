@@ -145,7 +145,7 @@ class CSP:
                         else:
                             openPaths += 1
 
-                    nodeScore = pathsNear * openPaths
+                    nodeScore =  len(self.domain)**openPaths
                     if bestNode is None or nodeScore < bestScore and pathsNear > 0:
                         bestNode = node
                         bestScore = nodeScore
